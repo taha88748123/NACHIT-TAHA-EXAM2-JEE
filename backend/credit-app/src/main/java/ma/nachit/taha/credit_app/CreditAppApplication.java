@@ -7,10 +7,13 @@ import ma.nachit.taha.credit_app.enums.TypeRemboursement;
 import ma.nachit.taha.credit_app.repositories.ClientRepository;
 import ma.nachit.taha.credit_app.repositories.CreditRepository;
 import ma.nachit.taha.credit_app.repositories.RemboursementRepository;
+import ma.nachit.taha.credit_app.security.AppUser;
+import ma.nachit.taha.credit_app.security.AppUserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +23,18 @@ public class CreditAppApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CreditAppApplication.class, args);
+    }
+
+    @Bean
+    CommandLineRunner initUsers(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder) {
+        return args -> {
+            appUserRepository.save(new AppUser(null, "admin", passwordEncoder.encode("123"),
+                    List.of("ROLE_ADMIN", "ROLE_EMPLOYE")));
+            appUserRepository.save(new AppUser(null, "employe", passwordEncoder.encode("123"),
+                    List.of("ROLE_EMPLOYE")));
+            appUserRepository.save(new AppUser(null, "client", passwordEncoder.encode("123"),
+                    List.of("ROLE_CLIENT")));
+        };
     }
 
     @Bean
